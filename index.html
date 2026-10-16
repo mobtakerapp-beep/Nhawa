@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي النحو الملون - الفعل المضارع (المرفوع والمنصوب)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #1e1b4b, #311042, #172554);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-white min-h-screen flex flex-col items-center justify-between p-4 md:p-6 overflow-x-hidden">
+
+    <header class="w-full max-w-2xl text-center my-3">
+        <div class="inline-block bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white text-xs md:text-sm px-4 py-1.5 rounded-full font-bold shadow-lg mb-2 animate-bounce">
+            ✨ مغامرة النحو الممتعة ✨
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black tracking-wider bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300 bg-clip-text text-transparent drop-shadow-md">
+            الفعل المضارع (مرفوع ولا منصوب؟)
+        </h1>
+        <p class="text-pink-200 text-sm md:text-base mt-2 font-semibold">ميز بين الفعل المضارع المرفوع (بالضمة) والمنصوب (بأداة نصب وفتحة)!</p>
+    </header>
+
+    <main class="w-full max-w-2xl bg-slate-900/80 backdrop-blur-xl border-2 border-purple-500/40 shadow-2xl rounded-3xl p-6 md:p-8 relative overflow-hidden pop-in">
+        
+        <!-- خلفية جمالية ملونة متألقة -->
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- شاشة اللعب الرئيسية -->
+        <div id="game-screen" class="space-y-6 relative z-10">
+            
+            <!-- لوحة الإحصائيات -->
+            <div class="flex items-center justify-between bg-slate-800/90 px-5 py-3 rounded-2xl border border-purple-500/30 text-sm md:text-base font-bold shadow-inner">
+                <div class="flex items-center gap-2">
+                    <span class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-ping"></span>
+                    <span id="question-counter" class="text-cyan-200">السؤال: 1 / 8</span>
+                </div>
+                <div class="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-1 rounded-xl shadow-md border border-pink-400/40">
+                    <span id="score-text">⭐ النقاط: 0</span>
+                </div>
+            </div>
+
+            <!-- صندوق الجملة أو القاعدة -->
+            <div class="bg-gradient-to-br from-indigo-950/80 to-purple-950/80 p-6 md:p-8 rounded-2xl border-2 border-indigo-400/50 shadow-xl text-center">
+                <span class="text-xs uppercase tracking-widest text-pink-300 font-bold bg-pink-500/20 px-3 py-1 rounded-full border border-pink-500/30 inline-block mb-3">اختر الإعراب الصحيح للفعل الملون</span>
+                <h2 id="question-text" class="text-xl md:text-3xl font-black leading-relaxed text-yellow-200 mt-2">
+                    جارٍ تحميل الجملة...
+                </h2>
+            </div>
+
+            <!-- شبكة الخيارات الملّونة -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- سيتم حقن الأزرار هنا عبر الجافاسكريبت -->
+            </div>
+            
+            <!-- صندوق التوضيح الفوري -->
+            <div id="feedback-box" class="hidden p-4 rounded-xl text-center font-bold text-sm md:text-base transition-all"></div>
+        </div>
+
+        <!-- شاشة انتهاء اللعبة -->
+        <div id="end-screen" class="hidden text-center py-6 space-y-6 relative z-10">
+            <div class="w-24 h-24 bg-gradient-to-tr from-yellow-400 to-pink-500 text-white rounded-full flex items-center justify-center text-5xl mx-auto shadow-2xl animate-bounce">
+                🏆
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-3xl font-black bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">يا بطل النحو، أنهيت التحدي!</h2>
+                <p id="final-score" class="text-purple-200 text-lg font-bold"></p>
+                <div id="badge-message" class="inline-block px-4 py-2 bg-purple-600/30 border border-purple-400 rounded-2xl text-pink-300 text-sm font-bold mt-2"></div>
+            </div>
+            <button onclick="restartGame()" class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 hover:opacity-90 text-white font-black text-lg rounded-2xl shadow-xl transition-all transform active:scale-95 cursor-pointer">
+                لعب مرة أخرى 🚀
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="text-center text-xs text-purple-300/90 mt-4 font-bold tracking-wider">
+        تصميم: مروة أبوبكر 🌟
+    </footer>
+
+    <script>
+        const questions = [
+            {
+                question: "يُحِبُّ الطفلُ أن <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>يَلْعَبَ</span> بالكرة.",
+                options: [
+                    { text: "فعل مضارع مرفوع بالضمة الظاهرة", correct: false },
+                    { text: "فعل مضارع منصوب وعلامة نصبه الفتحة", correct: true }
+                ],
+                explanation: "الإجابة صحيحة! سبق الفعل المضارع حرف النصب (أن)، فصار منصوباً وعلامة نصبه الفتحة الظاهرة على آخره."
+            },
+            {
+                question: "المسلمُ <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>يَصْدُقُ</span> في كلامِهِ دائماً.",
+                options: [
+                    { text: "فعل مضارع مرفوع وعلامة رفعه الضمة", correct: true },
+                    { text: "فعل مضارع منصوب وعلامة نصبه الفتحة", correct: false }
+                ],
+                explanation: "ممتاز! الفعل (يصدق) لم يسبقه أي ناصب أو جازم، فهو فعل مضارع مرفوع بالضمة الظاهرة."
+            },
+            {
+                question: "لَنْ <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>أُهْمِلَ</span> واجباتي أبداً.",
+                options: [
+                    { text: "فعل مضارع مرفوع بالضمة", correct: false },
+                    { text: "فعل مضارع منصوب بلن وعلامة نصبه الفتحة", correct: true }
+                ],
+                explanation: "رائع جداً! (لن) من حروف النصب، والفعل بعدها (أهملَ) فعل مضارع منصوب بالفتحة."
+            },
+            {
+                question: "الطائرُ <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>يَطِيرُ</span> في السَّماءِ بِحُرِّيَّةٍ.",
+                options: [
+                    { text: "فعل مضارع مرفوع وعلامة رفعه الضمة", correct: true },
+                    { text: "فعل مضارع منصوب وعلامة نصبه الفتحة", correct: false }
+                ],
+                explanation: "صحيح تماماً! الفعل (يطير) لم يسبقه ناصب ولا جازم، إذن هو مرفوع."
+            },
+            {
+                question: "يُريدُ المعلمُ أن <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>يَفْهَمَ</span> الطلابُ الدرسَ.",
+                options: [
+                    { text: "فعل مضارع مرفوع بالضمة", correct: false },
+                    { text: "فعل مضارع منصوب بأن وعلامة نصبه الفتحة", correct: true }
+                ],
+                explanation: "عبقري! سبقه حرف النصب (أن)، فجاء الفعل المضارع (يفهمَ) منصوباً بالفتحة."
+            },
+            {
+                question: "تُشْرِقُ الشمسُ صباحاً و<span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>تُنيرُ</span> الكون.",
+                options: [
+                    { text: "فعل مضارع مرفوع وعلامة رفعه الضمة", correct: true },
+                    { text: "فعل مضارع منصوب وعلامة نصبه الفتحة", correct: false }
+                ],
+                explanation: "أحسنت! الفعل (تنيرُ) مرفوع بالضمة لأنه لم يسبقه أي أداة نصب أو جزم."
+            },
+            {
+                question: "اِجْتَهِدْ كي <span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>تَتَفَوَّقَ</span> في حياتِكَ.",
+                options: [
+                    { text: "فعل مضارع مرفوع بالضمة", correct: false },
+                    { text: "فعل مضارع منصوب بكي وعلامة نصبه الفتحة", correct: true }
+                ],
+                explanation: "بطل! (كي) أداة نصب، والفعل بعدها (تتفوقَ) فعل مضارع منصوب بالفتحة."
+            },
+            {
+                question: "يَحْتَرِمُ الصغيرُ الكبيرَ و<span class='text-cyan-300 underline decoration-wavy decoration-pink-400'>يُقَدِّرُهُ</span>.",
+                options: [
+                    { text: "فعل مضارع مرفوع وعلامة رفعه الضمة", correct: true },
+                    { text: "فعل مضارع منصوب وعلامة نصبه الفتحة", correct: false }
+                ],
+                explanation: "إجابة موفقة! (يقدره) فعل مضارع مرفوع بالضمة لعدم سبقه بناصب أو جازم."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let lockAnswers = false;
+
+        const questionText = document.getElementById("question-text");
+        const optionsContainer = document.getElementById("options-container");
+        const scoreText = document.getElementById("score-text");
+        const questionCounter = document.getElementById("question-counter");
+        const gameScreen = document.getElementById("game-screen");
+        const endScreen = document.getElementById("end-screen");
+        const finalScore = document.getElementById("final-score");
+        const feedbackBox = document.getElementById("feedback-box");
+        const badgeMessage = document.getElementById("badge-message");
+
+        function loadQuestion() {
+            lockAnswers = false;
+            feedbackBox.classList.add("hidden");
+            feedbackBox.className = "hidden p-4 rounded-xl text-center font-bold text-sm md:text-base transition-all";
+            
+            const q = questions[currentQuestion];
+            questionText.innerHTML = q.question;
+            questionCounter.textContent = `السؤال: ${currentQuestion + 1} / ${questions.length}`;
+            
+            optionsContainer.innerHTML = "";
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement("button");
+                btn.className = "w-full text-center bg-slate-800/90 hover:bg-purple-900/60 border-2 border-purple-500/40 hover:border-pink-400 text-slate-100 font-bold p-4 md:p-5 rounded-2xl transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 shadow-lg cursor-pointer flex items-center justify-center gap-3";
+                
+                const badge = document.createElement("span");
+                badge.className = "w-7 h-7 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 text-white text-xs flex items-center justify-center font-black shadow-md";
+                badge.textContent = ['أ', 'ب'][index];
+                btn.appendChild(badge);
+
+                const span = document.createElement("span");
+                span.textContent = opt.text;
+                btn.appendChild(span);
+
+                btn.onclick = () => selectAnswer(opt.correct, btn, q.explanation);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(isCorrect, selectedBtn, explanationText) {
+            if (lockAnswers) return;
+            lockAnswers = true;
+
+            const buttons = optionsContainer.children;
+
+            Array.from(buttons).forEach((btn, idx) => {
+                const correct = questions[currentQuestion].options[idx].correct;
+                if (correct) {
+                    btn.className = "w-full text-center bg-emerald-600/30 border-2 border-emerald-400 text-emerald-200 font-bold p-4 md:p-5 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-all scale-[1.02]";
+                } else if (btn === selectedBtn && !isCorrect) {
+                    btn.className = "w-full text-center bg-rose-600/30 border-2 border-rose-400 text-rose-200 font-bold p-4 md:p-5 rounded-2xl shadow-lg flex items-center justify-center gap-3 transition-all";
+                } else {
+                    btn.className = "w-full text-center bg-slate-800/40 border-2 border-slate-700 text-slate-400 font-bold p-4 md:p-5 rounded-2xl opacity-50 flex items-center justify-center gap-3";
+                }
+            });
+
+            if (isCorrect) {
+                score += 12.5;
+                scoreText.textContent = `⭐ النقاط: ${score}`;
+                feedbackBox.className = "p-4 rounded-xl text-center font-bold text-sm md:text-base bg-emerald-500/20 border border-emerald-400/50 text-emerald-200 pop-in";
+                feedbackBox.innerHTML = `🎉 أحسنت! ${explanationText}`;
+            } else {
+                feedbackBox.className = "p-4 rounded-xl text-center font-bold text-sm md:text-base bg-rose-500/20 border border-rose-400/50 text-rose-200 pop-in";
+                feedbackBox.innerHTML = `❌ عذراً! ${explanationText}`;
+            }
+            feedbackBox.classList.remove("hidden");
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                } else {
+                    showEndScreen();
+                }
+            }, 2600);
+        }
+
+        function showEndScreen() {
+            gameScreen.classList.add("hidden");
+            endScreen.classList.remove("hidden");
+            finalScore.textContent = `لقد جمعت ${score} من 100 نقطة مذهلة! 🎉`;
+            
+            if (score === 100) {
+                badgeMessage.textContent = "🌟 وسام عبقري النحو وملك الأفعال المضارعة!";
+            } else if (score >= 75) {
+                badgeMessage.textContent = "🏅 ممتاز جداً! مستواك النحوي رائع للغاية.";
+            } else {
+                badgeMessage.textContent = "💡 حاول مرة أخرى لتتمكن من إتقان القاعدة تماماً!";
+            }
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            scoreText.textContent = `⭐ النقاط: ${score}`;
+            endScreen.classList.add("hidden");
+            gameScreen.classList.remove("hidden");
+            loadQuestion();
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
